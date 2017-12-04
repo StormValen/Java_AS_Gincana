@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Gincana</string>
+    <string name="myName">Valentin Gutierrez</string>
+    <string-array name="tipos_pistas">
+        <item>Image</item>
+        <item>Audio</item>
+        <item>Text</item>
+    </string-array>
+    <string name="title_activity_about">Informacion</string>
+    <string name="title_activity_gestionar_pistas">Gestionar pistas</string>
+    <string name="info">Work in progress App by Valentin Gutierrez</string>
+    <string name="twitter">Follow me on twitter @StormValen</string>
+    <string name="title_activity_pista__actual">Pista Actual</string>
+    <string name="title_activity_add_pista">Añadir pista</string>
+
+</resources>
