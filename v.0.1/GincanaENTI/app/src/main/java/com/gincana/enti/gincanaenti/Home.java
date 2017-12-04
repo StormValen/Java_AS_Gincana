@@ -1,11 +1,17 @@
 package com.gincana.enti.gincanaenti;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,19 +26,40 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.security.Principal;
 
-public class Home extends AppCompatActivity implements OnMapReadyCallback{
+
+public class Home extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener{
+
+    private GoogleApiClient apiClient;
+    private LocationRequest mLocationRequest;
+    private static final long INTERVAL = 1000; //1 segundo
+    private static final long FASTEST_INTERVAL = 1000; // 1 segundo
+    private static final float SMALLEST_DISPLACEMENT = 0.05F;
+    final int requestCode=0;
+    private String proveedor;
+    private LocationManager manejador;
+
+    private double locationLongitude;
+    private double locationLatitude;
+
+    private int PETICION_PERMISO_LOCALIZACION=0;
+
+
 
     private GoogleMap mMap;
     @Override
@@ -41,11 +68,11 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback{
         setContentView(R.layout.activity_principal);
 
         //Set the default hints.
-        PistaText testPistaText = new PistaText("0", "1", "Default text hint.", 340.0, 457.0, "text");
+        PistaText testPistaText = new PistaText("0", "1", "Gran Via 2", 41.359287905385166, 2.129545211791992, "text");
         ListaPistas.addPista(testPistaText);
-        PistaAudio testPistaAudio = new PistaAudio("1", "2", "Default audio hint.", 340.0, 457.0, "path");
+        PistaAudio testPistaAudio = new PistaAudio("1", "2", "Enti", 41.388074530341534, 2.1632257103919983, "path");
         ListaPistas.addPista(testPistaAudio);
-        PistaImatge testPistaImagen = new PistaImatge("2", "3", "Default image hint.", 340.0, 457.0, "path");
+        PistaImatge testPistaImagen = new PistaImatge("2", "3", "Sagrada Familia", 41.40363195631695, 2.1743541955947876, "path");
         ListaPistas.addPista(testPistaImagen);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
@@ -57,6 +84,123 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback{
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentMap);
         mapFragment.getMapAsync(this);
+
+
+        //Geolocalizacion
+        apiClient=new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        // Objecte que permet tractar els canvis de posició
+        manejador = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criterio = new Criteria();
+        criterio.setCostAllowed(false);
+        criterio.setAltitudeRequired(false);
+        criterio.setAccuracy(Criteria.ACCURACY_FINE);
+        proveedor = manejador.getBestProvider(criterio, true);
+    }
+
+    //Geolocalizacion
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        /* Connexió al servidor de geolocalització */
+        if (apiClient != null) {
+            apiClient.connect();
+        }
+
+        /* Configuració de l'escoltador de posicions */
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT); //added
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        /* Si el permís està concedit, activar les escoltes de posició */
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+            manejador.requestLocationUpdates(proveedor, INTERVAL, SMALLEST_DISPLACEMENT, this);
+        }
+        else {  /* Si no està concedit, demanar-lo a l'usuari */
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("GPS")
+                        .setMessage("Need to know your location")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                ActivityCompat.requestPermissions(Home.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestCode);
+                            }
+                        })
+                        .show();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestCode);
+            }
+        }
+    }
+
+    /* Mètode que s'executa cada cop que es modifica la posició del dispositiu */
+    public void onLocationChanged(Location location) {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PETICION_PERMISO_LOCALIZACION);
+        } else {
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+            if (lastLocation==null)
+                Toast.makeText(this, "Can not connect", Toast.LENGTH_SHORT).show();
+            else
+            {
+                /**** AQUEST MÈTODE ACTUALITZA LA INTERFICIE PER A MOSTRAR EN DOS TEXTVIEW LA LONGITUD I LATITUD ********/
+                locationLatitude = lastLocation.getLatitude();
+                locationLongitude = lastLocation.getLongitude();
+            }
+        }
+    }
+
+    /* Mètode que s'executa quan es produeix la connexió */
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PETICION_PERMISO_LOCALIZACION);
+        } else {
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+            if (lastLocation==null)
+                Toast.makeText(this, "Can not connect", Toast.LENGTH_SHORT).show();
+            else
+            {
+                /**** AQUEST MÈTODE ACTUALITZA LA INTERFICIE PER A MOSTRAR EN DOS TEXTVIEW LA LONGITUD I LATITUD ********/
+                locationLatitude = lastLocation.getLatitude();
+                locationLongitude = lastLocation.getLongitude();
+            }
+        }
+        createMarker();
+    }
+
+
+    public void onProviderEnabled(String proveedor) {
+        Toast.makeText(this,"Proveidor habilitat: " + proveedor + "\n", Toast.LENGTH_LONG).show();
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    }
+
+    public void onConnectionSuspended(int i) {
+    }
+
+    public void onConnectionFailed(ConnectionResult result) {
+    }
+
+    public void onStatusChanged(String proveedor, int estado, Bundle extras) {
+    }
+
+    public void onProviderDisabled(String proveedor) {
     }
 
     //Basic toolbar menu.
@@ -110,8 +254,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback{
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle(ListaPistas.get(0).getDescription());
             alertDialogBuilder.setMessage("Info");
-            alertDialogBuilder.setIcon(ListaPistas.get(0).getTipus());
-            alertDialogBuilder.setPositiveButton("ok",
+            alertDialogBuilder.setIcon(R.mipmap.ic_hintimage);
+            alertDialogBuilder.setPositiveButton("close",
                     new DialogInterface.OnClickListener() { //Ok.
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
@@ -125,16 +269,19 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback{
 
     }
 
+    public void createMarker(){
+        LatLng currentPosition = new LatLng(locationLatitude,locationLongitude);
+        CameraPosition camPos = new CameraPosition.Builder()
+                .target(currentPosition)
+                .zoom(17)
+                .build();
+        CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
+        mMap.animateCamera(camUpd3);
+        mMap.addMarker(new MarkerOptions().position(currentPosition).title("My position").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_currentposition)));
+    }
+
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng barcelona = new LatLng(41.390205, 2.154007);
-
-
-        mMap.addMarker(new MarkerOptions().position(barcelona).title("Marker in Barcelona").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_personalizado)));
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
         boolean success = mMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
                         Home.this, R.raw.maps_black));

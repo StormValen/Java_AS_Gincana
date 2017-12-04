@@ -88,9 +88,10 @@ public class Hints_Management extends AppCompatActivity implements View.OnLongCl
         //Create a popup if the bin is there's a hint selected and the bin is clicked.
         if(id == R.id.delete && selectedHintToDelete != "" && FondoPistaSeleccionada != null){
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle("Delete hint with ID: " + selectedHintToDelete);
-            alertDialogBuilder.setMessage("Are you sure from removing it permanently?");
-            alertDialogBuilder.setPositiveButton("yes, remove it",
+            alertDialogBuilder.setTitle("Delete item permanently?");
+            alertDialogBuilder.setMessage("This action can't be undone");
+            alertDialogBuilder.setIcon(R.mipmap.ic_warning);
+            alertDialogBuilder.setPositiveButton("yes, delete it",
                     new DialogInterface.OnClickListener() { //Ok.
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
