@@ -12,5 +12,6 @@
     <string name="twitter">Follow me on twitter @StormValen</string>
     <string name="title_activity_pista__actual">Pista Actual</string>
     <string name="title_activity_add_pista">Añadir pista</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

@@ -21,70 +21,43 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class Home extends AppCompatActivity{
 
-   /* private GoogleApiClient apiClient;
-    private GoogleMap mapa;*/
+public class Home extends AppCompatActivity implements OnMapReadyCallback{
 
+    private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
         //Set the default hints.
-        PistaText testPistaText = new PistaText("0","1","Default text hint.",340.0,457.0,"text");
+        PistaText testPistaText = new PistaText("0", "1", "Default text hint.", 340.0, 457.0, "text");
         ListaPistas.addPista(testPistaText);
-        PistaAudio testPistaAudio = new PistaAudio("1","2","Default audio hint.",340.0,457.0,"path");
+        PistaAudio testPistaAudio = new PistaAudio("1", "2", "Default audio hint.", 340.0, 457.0, "path");
         ListaPistas.addPista(testPistaAudio);
-        PistaImatge testPistaImagen = new PistaImatge("2","3","Default image hint.",340.0,457.0,"path");
+        PistaImatge testPistaImagen = new PistaImatge("2", "3", "Default image hint.", 340.0, 457.0, "path");
         ListaPistas.addPista(testPistaImagen);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.appbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(toolbar);
 
         updateCurrent(0);
 
-        /*apiClient=new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addApi(LocationServices.API).build();
-        MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.fragmentMaps);
-        if(mapFragment==null){
-            Toast.makeText(this,"Mapa no trobat",Toast.LENGTH_SHORT).show();
-        }
-        mapFragment.getMapAsync(this);*/
+        //Necesary for the map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragmentMap);
+        mapFragment.getMapAsync(this);
     }
-
-    /*public void onMapReady(GoogleMap p){
-        mapa = p;
-    }
-
-    public void onLocationChanged(Location location) {
-    }
-
-    public void onConnectionFailed(ConnectionResult result) {
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    }
-
-    public void onConnectionSuspended(int i) {
-    }
-
-    public void onStatusChanged(String proveedor, int estado, Bundle extras) {
-    }
-
-    public void onProviderEnabled(String proveedor) {
-    }
-
-    public void onProviderDisabled(String proveedor) {
-    }
-
-    public void onConnected(@Nullable Bundle bundle) {
-    }*/
-
 
     //Basic toolbar menu.
     @Override public boolean onCreateOptionsMenu(Menu menu){
@@ -152,16 +125,18 @@ public class Home extends AppCompatActivity{
 
     }
 
-    /*public void clickExit(View view){
-        Toast.makeText(this,"Gracias por probar la aplicacion",Toast.LENGTH_SHORT).show();
-        new CountDownTimer(1000, 1000) {
-            public void onTick(long millisUntilFinished) {
-            }
-            public void onFinish() {
-                finish();
-                System.exit(0);
-            }
-        }.start();
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
 
-    }*/
+        // Add a marker in Sydney and move the camera
+        LatLng barcelona = new LatLng(41.390205, 2.154007);
+
+
+        mMap.addMarker(new MarkerOptions().position(barcelona).title("Marker in Barcelona").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_personalizado)));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona));
+        boolean success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                        Home.this, R.raw.maps_black));
+    }
 }
