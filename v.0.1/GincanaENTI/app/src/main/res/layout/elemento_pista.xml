@@ -46,20 +46,20 @@
                 <TextView
                     android:id="@+id/nomVersio"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="15dp"
                     android:text="ID"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/desPista"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="15dp"
                     android:text="Descripcion" />
 
                 <TextView
                     android:id="@+id/nextID"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="15dp"
                     android:layout_weight="1"
                     android:text="Next ID" />
 
@@ -73,14 +73,14 @@
                 <TextView
                     android:id="@+id/Latitud"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="15dp"
                     android:layout_weight="1"
                     android:text="Lat" />
 
                 <TextView
                     android:id="@+id/Longitud"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="15dp"
                     android:layout_weight="1"
                     android:text="Lon" />
 

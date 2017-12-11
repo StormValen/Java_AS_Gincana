@@ -6,42 +6,39 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <TextView
-        android:id="@+id/textView"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Stories"
-        android:textStyle="bold"
-        tools:text="Stories" />
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="@color/colorPrimary">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:weightSum="1">
-
-        <ImageButton
-            android:id="@+id/actualHintImage"
-            style="@android:style/Widget.Holo.ImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.03"
-            android:background="@color/colorMyBackground"
-            android:onClick="viewHint"
-            app:srcCompat="@mipmap/ic_personalizado" />
-
-        <TextView
-            android:id="@+id/storiesActualHint"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:text="Hint"
-            android:textAlignment="center" />
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_weight="1.96"
+                android:text="Tap to see current hint"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/actualHintImage"
+                style="@android:style/Widget.Holo.ImageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.96"
+                android:background="@color/colorPrimary"
+                android:onClick="viewHint"
+                app:srcCompat="@mipmap/ic_personalizado" />
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

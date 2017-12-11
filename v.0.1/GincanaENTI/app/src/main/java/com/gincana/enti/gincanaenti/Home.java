@@ -237,15 +237,15 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
     }
 
     public void updateCurrent(String text){
-        TextView actualHint = (TextView)findViewById(R.id.storiesActualHint);
-        actualHint.setText(text);
+        //TextView actualHint = (TextView)findViewById(R.id.storiesActualHint);
+        //actualHint.setText(text);
         ImageView imgTipoPista = (ImageView)findViewById((R.id.actualHintImage));
         imgTipoPista.setImageResource(R.mipmap.ic_personalizado);
     }
 
     public void updateCurrent(int position){
-        TextView actualHint = (TextView)findViewById(R.id.storiesActualHint);
-        actualHint.setText(ListaPistas.get(position).getDescription());
+        //TextView actualHint = (TextView)findViewById(R.id.storiesActualHint);
+        //actualHint.setText(ListaPistas.get(position).getDescription());
         ImageView imgTipoPista = (ImageView)findViewById((R.id.actualHintImage));
         imgTipoPista.setImageResource(ListaPistas.get(position).getTipus());
     }

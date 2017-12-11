@@ -24,27 +24,18 @@
         </android.support.design.widget.AppBarLayout>
 
         <fragment
+            android:id="@+id/fragmentMap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="195dp"
+            android:layout_weight="0.98"
+            tools:context="com.gincana.enti.gincanaenti.MapsActivity" />
+
+        <fragment
             android:id="@+id/fragment3"
             android:name="com.gincana.enti.gincanaenti.HintStoriesFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
-            android:text="Location"
-            android:textStyle="bold" />
-
-        <fragment
-            android:id="@+id/fragmentMap"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            tools:context="com.gincana.enti.gincanaenti.MapsActivity" />
 
 
     </LinearLayout>
