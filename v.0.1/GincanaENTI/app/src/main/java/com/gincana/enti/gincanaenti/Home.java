@@ -44,7 +44,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.security.Principal;
 
 
-public class Home extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener{
+public class Home extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,NavigationView.OnNavigationItemSelectedListener{
 
     private GoogleApiClient apiClient;
     private LocationRequest mLocationRequest;
@@ -88,8 +88,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
                 .findFragmentById(R.id.fragmentMap);
         mapFragment.getMapAsync(this);
 
-        //NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
-        //navigationView.setNavigationItemSelectedListener(this);
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         //Geolocalizacion
         apiClient=new GoogleApiClient.Builder(this)
@@ -146,7 +146,14 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
     }
 
     public boolean onNavigationItemSelected(MenuItem item){
-        return false;
+        int id = item.getItemId();
+        if(id==R.id.who){
+            Intent i = new Intent(this, About.class);
+            i.putExtra("Texto", ":)");
+            startActivity(i);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /* Mètode que s'executa cada cop que es modifica la posició del dispositiu */
@@ -168,6 +175,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
                 locationLongitude = lastLocation.getLongitude();
             }
         }
+
+
     }
 
     /* Mètode que s'executa quan es produeix la connexió */
@@ -240,6 +249,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == 0 && resultCode == RESULT_OK &&!ListaPistas.listaPistas.isEmpty()){
             updateCurrent(0);
+            checkHintPosition();
         }else{
             updateCurrent("EMPTY");
         }
@@ -287,6 +297,15 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
         CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
         mMap.animateCamera(camUpd3);
         mMap.addMarker(new MarkerOptions().position(currentPosition).title("My position").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_currentposition)));
+    }
+
+    public void checkHintPosition(){
+        LatLng currentPosition = new LatLng(locationLatitude,locationLongitude);
+        if(currentPosition.latitude - ListaPistas.get(0).getPosition().getLatitude() < 0.005 && currentPosition.longitude - ListaPistas.get(0).getPosition().getLongitude() < 0.005) {
+            LatLng pistaPostion = new LatLng(ListaPistas.get(0).getPosition().getLatitude(),ListaPistas.get(0).getPosition().getLongitude());
+            mMap.addMarker(new MarkerOptions().position(pistaPostion).title(ListaPistas.get(0).getDescription()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_locationvisited)));
+        }
+
     }
 
     public void onMapReady(GoogleMap googleMap) {

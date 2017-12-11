@@ -4,8 +4,9 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_view"
-            android:icon="@drawable/ic_search_black_24dp"
-            android:title="Import"/>
+            android:id="@+id/who"
+            android:icon="@drawable/googleg_disabled_color_18"
+            android:title="Valen Gutierrez"
+            app:showAsAction="never" />
     </group>
 </menu>
