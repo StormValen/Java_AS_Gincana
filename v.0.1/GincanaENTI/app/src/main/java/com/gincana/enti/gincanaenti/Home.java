@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -61,9 +62,11 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
 
 
 
+
     private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
@@ -85,6 +88,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
                 .findFragmentById(R.id.fragmentMap);
         mapFragment.getMapAsync(this);
 
+        //NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+        //navigationView.setNavigationItemSelectedListener(this);
 
         //Geolocalizacion
         apiClient=new GoogleApiClient.Builder(this)
@@ -138,6 +143,10 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, requestCode);
             }
         }
+    }
+
+    public boolean onNavigationItemSelected(MenuItem item){
+        return false;
     }
 
     /* Mètode que s'executa cada cop que es modifica la posició del dispositiu */
