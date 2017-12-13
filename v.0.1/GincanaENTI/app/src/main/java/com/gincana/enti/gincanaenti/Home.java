@@ -187,7 +187,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
         Toast.makeText(this, "HOLI", Toast.LENGTH_SHORT).show();
         updateMyPosition();
         //if(!isTheSameHint){
-            checkHintPosition();   //OJO!!!!
+            //checkHintPosition();   //OJO!!!!
             isTheSameHint = true;
         //}
     }
