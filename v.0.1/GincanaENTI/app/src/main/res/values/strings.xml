@@ -5,6 +5,7 @@
         <item>Image</item>
         <item>Audio</item>
         <item>Text</item>
+        <item>Video</item>
     </string-array>
     <string name="title_activity_about">Informacion</string>
     <string name="title_activity_gestionar_pistas">Gestionar pistas</string>

@@ -58,7 +58,12 @@ public class Add_Hint extends AppCompatActivity {
                             PistaText nuevaPistaT = new PistaText(ID.getText().toString(),nextID.getText().toString(),des.getText().toString(),Integer.parseInt(lat.getText().toString()),Integer.parseInt(lon.getText().toString()),"text");
                             ListaPistas.addPista(nuevaPistaT);
                             Toast.makeText(view.getContext(),"Text hint added properly",Toast.LENGTH_SHORT).show();
+                        } else if(option.getSelectedItemPosition() == 3){
+                            pistaVideo nuevaPistaV = new pistaVideo(ID.getText().toString(),nextID.getText().toString(),des.getText().toString(),Integer.parseInt(lat.getText().toString()),Integer.parseInt(lon.getText().toString()),"text");
+                            ListaPistas.addPista(nuevaPistaV);
+                            Toast.makeText(view.getContext(),"Video hint added properly",Toast.LENGTH_SHORT).show();
                         }
+
                         setResult(RESULT_OK);
                         finish();
                     } else { //If the id already exist.

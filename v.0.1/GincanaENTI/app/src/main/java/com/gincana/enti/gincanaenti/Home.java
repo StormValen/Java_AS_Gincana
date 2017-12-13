@@ -83,6 +83,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
         ListaPistas.addPista(testPistaImagen);
         PistaAudio testPistaAudio = new PistaAudio("2", "3", "Enti", 41.388074530341534, 2.1632257103919983, "path");
         ListaPistas.addPista(testPistaAudio);
+        pistaVideo testPistaVideo = new pistaVideo("3", "4", "MyVideo", 41.388074530341534, 2.1632257103919983, "path");
+        ListaPistas.addPista(testPistaVideo);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
