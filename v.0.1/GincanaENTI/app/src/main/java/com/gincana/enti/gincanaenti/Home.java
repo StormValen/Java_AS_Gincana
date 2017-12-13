@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.security.Principal;
@@ -61,27 +62,34 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
     private int PETICION_PERMISO_LOCALIZACION=0;
 
 
-
+    LatLng currentPosition = new LatLng(0,0);
 
     private GoogleMap mMap;
+    private Marker positionMarker;
+    private boolean isTheSameHint = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
         //Set the default hints.
-        PistaText testPistaText = new PistaText("0", "1", "Gran Via 2", 41.359287905385166, 2.129545211791992, "text");
+        //PistaText testPistaText = new PistaText("0", "1", "Gran Via 2", 41.359287905385166, 2.129545211791992, "text");
+        PistaText testPistaText = new PistaText("0", "1", "Home", 41.37431481670299, 2.108534127473831, "text");
         ListaPistas.addPista(testPistaText);
-        PistaAudio testPistaAudio = new PistaAudio("1", "2", "Enti", 41.388074530341534, 2.1632257103919983, "path");
-        ListaPistas.addPista(testPistaAudio);
-        PistaImatge testPistaImagen = new PistaImatge("2", "3", "Sagrada Familia", 41.40363195631695, 2.1743541955947876, "path");
+        PistaImatge testPistaImagen = new PistaImatge("1", "2", "Sagrada Familia", 41.40363195631695, 2.1743541955947876, "path");
         ListaPistas.addPista(testPistaImagen);
+        PistaAudio testPistaAudio = new PistaAudio("2", "3", "Enti", 41.388074530341534, 2.1632257103919983, "path");
+        ListaPistas.addPista(testPistaAudio);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(toolbar);
 
         updateCurrent(0);
+
 
         //Necesary for the map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -166,17 +174,22 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
                     PETICION_PERMISO_LOCALIZACION);
         } else {
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
-            if (lastLocation==null)
+            if (lastLocation == null)
                 Toast.makeText(this, "Can not connect", Toast.LENGTH_SHORT).show();
-            else
-            {
+            else {
                 /**** AQUEST MÈTODE ACTUALITZA LA INTERFICIE PER A MOSTRAR EN DOS TEXTVIEW LA LONGITUD I LATITUD ********/
                 locationLatitude = lastLocation.getLatitude();
                 locationLongitude = lastLocation.getLongitude();
+                currentPosition = new LatLng(locationLatitude, locationLongitude);
+                positionMarker.setPosition(currentPosition);
             }
         }
-
-
+        Toast.makeText(this, "HOLI", Toast.LENGTH_SHORT).show();
+        updateMyPosition();
+        //if(!isTheSameHint){
+            checkHintPosition();   //OJO!!!!
+            isTheSameHint = true;
+        //}
     }
 
     /* Mètode que s'executa quan es produeix la connexió */
@@ -198,12 +211,11 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
                 locationLongitude = lastLocation.getLongitude();
             }
         }
-        createMarker();
     }
 
 
     public void onProviderEnabled(String proveedor) {
-        Toast.makeText(this,"Proveidor habilitat: " + proveedor + "\n", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,"Proveidor habilitat: " + proveedor + "\n", Toast.LENGTH_LONG).show();
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -249,7 +261,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == 0 && resultCode == RESULT_OK &&!ListaPistas.listaPistas.isEmpty()){
             updateCurrent(0);
-            checkHintPosition();
         }else{
             updateCurrent("EMPTY");
         }
@@ -289,27 +300,67 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback, Googl
     }
 
     public void createMarker(){
-        LatLng currentPosition = new LatLng(locationLatitude,locationLongitude);
         CameraPosition camPos = new CameraPosition.Builder()
                 .target(currentPosition)
                 .zoom(17)
                 .build();
         CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
         mMap.animateCamera(camUpd3);
-        mMap.addMarker(new MarkerOptions().position(currentPosition).title("My position").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_currentposition)));
+        positionMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("My position").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_currentposition)));
+    }
+
+    public void updateMyPosition(){
+        CameraPosition camPos = new CameraPosition.Builder()
+                .target(currentPosition)
+                .zoom(17)
+                .build();
+        CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
+        mMap.animateCamera(camUpd3);
     }
 
     public void checkHintPosition(){
-        LatLng currentPosition = new LatLng(locationLatitude,locationLongitude);
-        if(currentPosition.latitude - ListaPistas.get(0).getPosition().getLatitude() < 0.005 && currentPosition.longitude - ListaPistas.get(0).getPosition().getLongitude() < 0.005) {
-            LatLng pistaPostion = new LatLng(ListaPistas.get(0).getPosition().getLatitude(),ListaPistas.get(0).getPosition().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(pistaPostion).title(ListaPistas.get(0).getDescription()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_locationvisited)));
-        }
+        updateMyPosition();
 
+        //LatLng currentPosition = new LatLng(locationLatitude,locationLongitude);
+        if(!ListaPistas.listaPistas.isEmpty()) {
+            if (currentPosition.latitude - Float.valueOf(Double.toString(ListaPistas.get(0).getPosition().getLatitude())) < 0.005f && currentPosition.longitude - Float.valueOf(Double.toString(ListaPistas.get(0).getPosition().getLongitude())) < 0.005f) {
+                LatLng pistaPostion = new LatLng(ListaPistas.get(0).getPosition().getLatitude(), ListaPistas.get(0).getPosition().getLongitude());
+                mMap.addMarker(new MarkerOptions().position(pistaPostion).title(ListaPistas.get(0).getDescription()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_locationvisited)));
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Congratulations");
+                alertDialogBuilder.setMessage("You unlocked a new hint!");
+                alertDialogBuilder.setIcon(R.mipmap.ic_hintimage);
+                alertDialogBuilder.setPositiveButton("close",
+                        new DialogInterface.OnClickListener() { //Ok.
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                //Delete the selected hint.
+
+
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+
+                    if (!ListaPistas.listaPistas.isEmpty()) {
+                        ListaPistas.deletePista(ListaPistas.get(0).getCodID());
+                        updateCurrent(0);
+                        isTheSameHint = false;
+                    } else {
+                        updateCurrent("EMPTY");
+                    }
+
+
+
+
+            }
+        }
     }
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        createMarker();
         boolean success = mMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
                         Home.this, R.raw.maps_black));
